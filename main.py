@@ -37,10 +37,10 @@ def paymethod():
         }
 
         res = requests.post(URL, headers=headers, params=params)
-        request.session['tid'] = res.json()['tid']# 결제 승인시 사용할 tid를 세션에 저장
+        session['tid'] = res.json()['tid']# 결제 승인시 사용할 tid를 세션에 저장
         next_url = res.json()['next_redirect_pc_url']
 
-        return next_url
+        return jsonify({'next_url': res.json()['next_redirect_pc_url']})
 
     return render_template('index.html')
 
@@ -54,7 +54,7 @@ def sucess():
     }
     params = {
         "cid": "TC0ONETIME",  # 테스트용 코드
-        "tid": request.session['tid'],  # 결제 요청시 세션에 저장한 tid
+        "tid": session['tid'],  # 결제 요청시 세션에 저장한 tid
         "partner_order_id": "1001",  # 주문번호
         "partner_user_id": "testuser",  # 유저 아이디
         "pg_token": request.args.get("pg_token"),  # 쿼리 스트링으로 받은 pg토큰
@@ -83,7 +83,7 @@ def cancel():
     }
     params = {
         "cid": "TC0ONETIME",  # 가맹점 코드
-        "tid": request.session['tid'],  # 결제 고유 코드
+        "tid": session['tid'],  # 결제 고유 코드
 
     }
 
