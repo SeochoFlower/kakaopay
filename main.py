@@ -2,6 +2,8 @@ from flask import Flask, session, render_template, request, jsonify, escape
 import requests
 import json
 
+from werkzeug.utils import redirect
+
 app = Flask(__name__,
             static_url_path='',
             static_folder='static'
@@ -9,7 +11,7 @@ app = Flask(__name__,
 
 
 @app.route("/")
-@app.route("/kakaopay")
+@app.route("/kakaopay",methods=["GET"])
 def main():
     return render_template('index.html')
 
@@ -26,18 +28,18 @@ def paymethod():
             "cid": "TC0ONETIME",
             "partner_order_id": "1001",
             "partner_user_id": "testuser",
-            "item_name": "연어초밥",
+            "item_name": "양재꽃시장에서 공수한 장미 꽃다발",
             "quantity": 1,
-            "total_amount": 12000,
+            "total_amount": 199999,
             "tax_free_amount": 0,
             "vat_amount": 200,
-            "approval_url": "http://127.0.0.1:5000/kakaopay/success",
-            "cancel_url": "http://127.0.0.1:5000/kakaopay/cancel",
-            "fail_url": "http://127.0.0.1:5000/kakaopay/fail",
+            "approval_url": "http://localhost:5000/kakaopay/success",
+            "cancel_url": "http://localhost:5000/kakaopay/cancel",
+            "fail_url": "http://localhost:5000/kakaopay/fail",
         }
 
         res = requests.post(URL, headers=headers, params=params)
-        session['tid'] = res.json()['tid']# 결제 승인시 사용할 tid를 세션에 저장
+        session['tid'] = res.json()['tid']
         next_url = res.json()['next_redirect_pc_url']
 
         return jsonify({'next_url': res.json()['next_redirect_pc_url']})
@@ -108,4 +110,4 @@ def fail():
 
 if __name__ == '__main__':
     app.secret_key = 'super secret key'
-    app.run(host='127.0.0.1', port=5000, debug=True)
+    app.run(host='localhost', port=5000, debug=True)
